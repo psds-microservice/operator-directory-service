@@ -1,0 +1,314 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "operator_directory.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "OperatorDirectoryService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/operators": {
+      "get": {
+        "operationId": "OperatorDirectoryService_ListOperators",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/operator_directory_serviceListOperatorsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "description": "\"available\" | \"busy\" | \"\"",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "OperatorDirectoryService"
+        ]
+      },
+      "post": {
+        "operationId": "OperatorDirectoryService_CreateOperator",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/operator_directory_serviceOperatorProfile"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/operator_directory_serviceCreateOperatorRequest"
+            }
+          }
+        ],
+        "tags": [
+          "OperatorDirectoryService"
+        ]
+      }
+    },
+    "/api/v1/operators/{userId}": {
+      "get": {
+        "operationId": "OperatorDirectoryService_GetOperator",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/operator_directory_serviceOperatorEntry"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "OperatorDirectoryService"
+        ]
+      },
+      "put": {
+        "operationId": "OperatorDirectoryService_UpdateOperator",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/operator_directory_serviceOperatorProfile"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OperatorDirectoryServiceUpdateOperatorBody"
+            }
+          }
+        ],
+        "tags": [
+          "OperatorDirectoryService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "OperatorDirectoryServiceUpdateOperatorBody": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "type": "string",
+          "title": "empty = do not update"
+        },
+        "role": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        }
+      }
+    },
+    "operator_directory_serviceCreateOperatorRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        }
+      }
+    },
+    "operator_directory_serviceListOperatorsResponse": {
+      "type": "object",
+      "properties": {
+        "operators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/operator_directory_serviceOperatorEntry"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "operator_directory_serviceOperatorEntry": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "activeSessions": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxSessions": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "description": "OperatorEntry — запись в справочнике (профиль + статус из пула)."
+    },
+    "operator_directory_serviceOperatorProfile": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "OperatorProfile — профиль оператора в БД (без статуса пула)."
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

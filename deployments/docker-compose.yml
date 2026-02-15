@@ -1,0 +1,35 @@
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: operator-directory-service/deployments/Dockerfile
+    ports:
+      - "8095:8095"
+    environment:
+      - APP_HOST=0.0.0.0
+      - APP_PORT=8095
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE=operator_directory_service
+      - DB_SSLMODE=disable
+      # When operator-pool runs on host: OPERATOR_POOL_URL=http://host.docker.internal:8094
+      - OPERATOR_POOL_URL=${OPERATOR_POOL_URL:-http://host.docker.internal:8094}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: operator_directory_service
+    ports:
+      - "5436:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 5

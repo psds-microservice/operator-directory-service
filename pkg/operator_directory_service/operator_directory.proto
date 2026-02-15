@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package operator_directory_service;
+
+option go_package = "github.com/psds-microservice/operator-directory-service/pkg/gen/operator_directory_service;operator_directory_service";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+// OperatorDirectoryService — реестр операторов для UI: список, профиль, создание, обновление.
+// REST-маппинг через google.api.http.
+service OperatorDirectoryService {
+  rpc ListOperators (ListOperatorsRequest) returns (ListOperatorsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/operators"
+    };
+  }
+  rpc GetOperator (GetOperatorRequest) returns (OperatorEntry) {
+    option (google.api.http) = {
+      get: "/api/v1/operators/{user_id}"
+    };
+  }
+  rpc CreateOperator (CreateOperatorRequest) returns (OperatorProfile) {
+    option (google.api.http) = {
+      post: "/api/v1/operators"
+      body: "*"
+    };
+  }
+  rpc UpdateOperator (UpdateOperatorRequest) returns (OperatorProfile) {
+    option (google.api.http) = {
+      put: "/api/v1/operators/{user_id}"
+      body: "*"
+    };
+  }
+}
+
+// OperatorEntry — запись в справочнике (профиль + статус из пула).
+message OperatorEntry {
+  string user_id = 1;
+  string region = 2;
+  string role = 3;
+  string display_name = 4;
+  bool available = 5;
+  int32 active_sessions = 6;
+  int32 max_sessions = 7;
+}
+
+// OperatorProfile — профиль оператора в БД (без статуса пула).
+message OperatorProfile {
+  string user_id = 1;
+  string region = 2;
+  string role = 3;
+  string display_name = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message ListOperatorsRequest {
+  string region = 1;
+  string role = 2;
+  string status = 3;   // "available" | "busy" | ""
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+message ListOperatorsResponse {
+  repeated OperatorEntry operators = 1;
+  int32 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetOperatorRequest {
+  string user_id = 1;
+}
+
+message CreateOperatorRequest {
+  string user_id = 1;
+  string region = 2;
+  string role = 3;
+  string display_name = 4;
+}
+
+message UpdateOperatorRequest {
+  string user_id = 1;
+  string region = 2;        // empty = do not update
+  string role = 3;
+  string display_name = 4;
+}

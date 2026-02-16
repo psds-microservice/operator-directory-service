@@ -154,6 +154,10 @@ github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/psds-microservice/helpy v0.1.0 h1:AqmK+l/DclxENSFve+tFCxf58BUkOw+NfbU8ycl2P3c=
+github.com/psds-microservice/helpy v0.1.0/go.mod h1:qOy3Zm35ymd8NXdC+2RtO/vanhrHY5FFgyY2BgGyD9k=
+github.com/psds-microservice/infra v0.0.3 h1:b2yO9n2v3PyyL4Smxz5ZMyU51/gSjwgoOuQMBsiHX0I=
+github.com/psds-microservice/infra v0.0.3/go.mod h1:NxMDFKfs7gilRDjbhZzjM9+g9X1GIR9KSUF3Yjxhej8=
 github.com/quic-go/qpack v0.6.0 h1:g7W+BMYynC1LbYLSqRt8PBg5Tgwxn214ZZR34VIOjz8=
 github.com/quic-go/qpack v0.6.0/go.mod h1:lUpLKChi8njB4ty2bFLX2x4gzDqXwUpaO1DP9qMDZII=
 github.com/quic-go/quic-go v0.59.0 h1:OLJkp1Mlm/aS7dpKgTc6cnpynnD2Xg7C1pwL6vy/SAw=

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	_ "github.com/psds-microservice/infra" // для go mod vendor (proto-build)
 	"github.com/psds-microservice/operator-directory-service/cmd"
 )
 

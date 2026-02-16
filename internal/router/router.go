@@ -17,11 +17,15 @@ func New(directoryHandler *handler.DirectoryHandler) http.Handler {
 	r.Use(gin.Recovery())
 	r.GET(paths.PathHealth, handler.Health)
 	r.GET(paths.PathReady, handler.Ready)
-	// Swagger: один маршрут *any, чтобы не конфликтовать с openapi.json в дереве Gin
+	r.GET(paths.PathSwagger, func(c *gin.Context) { c.Redirect(http.StatusFound, paths.PathSwagger+"/") })
 	r.GET(paths.PathSwagger+"/*any", func(c *gin.Context) {
 		if strings.TrimPrefix(c.Param("any"), "/") == "openapi.json" {
 			c.Data(http.StatusOK, "application/json", api.OpenAPISpec)
 			return
+		}
+		if strings.TrimPrefix(c.Param("any"), "/") == "" {
+			c.Request.URL.Path = paths.PathSwagger + "/index.html"
+			c.Request.RequestURI = paths.PathSwagger + "/index.html"
 		}
 		ginSwagger.WrapHandler(swaggerFiles.Handler,
 			ginSwagger.URL("/swagger/openapi.json"),

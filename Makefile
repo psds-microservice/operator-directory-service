@@ -19,7 +19,7 @@ help:
 	@echo "  make proto-openapi      - Generate OpenAPI (api/openapi.json) from .proto"
 	@echo "  make install-deps       - go mod download + install protoc plugins"
 	@echo "  make update             - go get -u, tidy, vendor, proto (as in user-service)"
-	@echo "  Port: $(PORT)  Health: http://localhost:$(PORT)/health  Swagger: http://localhost:$(PORT)/swagger/index.html"
+	@echo "  Port: $(PORT)  Health: http://localhost:$(PORT)/health  Swagger: http://localhost:$(PORT)/swagger"
 
 build:
 	@mkdir -p $(BIN_DIR)
@@ -67,20 +67,13 @@ update:
 	@$(MAKE) proto-openapi 2>/dev/null || true
 	@echo "Dependencies updated"
 
-## Proto: как в user-service — образ из локального infra/ (submodule) или клонирование psds-microservice/infra
+## Proto: образ из vendored infra (go mod vendor)
+INFRA_VENDOR := vendor/github.com/psds-microservice/infra
 proto: proto-build proto-generate
 
 proto-build:
-	@echo "Building protoc-go image..."
-	@if [ -f infra/protoc-go.Dockerfile ]; then \
-		echo "Using local infra/ (submodule)..."; \
-		docker build -t $(PROTOC_IMAGE) -f infra/protoc-go.Dockerfile .; \
-	else \
-		echo "Cloning psds-microservice/infra..."; \
-		rm -rf build/infra-repo && mkdir -p build && git clone --depth 1 https://github.com/psds-microservice/infra.git build/infra-repo && \
-		mkdir -p build/infra-repo/infra && cp build/infra-repo/docker-entrypoint.sh build/infra-repo/infra/; \
-		docker build -t $(PROTOC_IMAGE) -f build/infra-repo/protoc-go.Dockerfile build/infra-repo; \
-	fi
+	@echo "Building protoc-go image (from $(INFRA_VENDOR))..."
+	@docker build -t $(PROTOC_IMAGE) -f $(INFRA_VENDOR)/protoc-go.Dockerfile $(INFRA_VENDOR)
 	@echo "Docker image built"
 
 proto-generate:
@@ -111,7 +104,7 @@ proto-generate-docker:
 		--go_out=. --go_opt=module=$(GO_MODULE) \
 		--go-grpc_out=. --go-grpc_opt=module=$(GO_MODULE) \
 		--grpc-gateway_out=. --grpc-gateway_opt=module=$(GO_MODULE) \
-		$(PROTO_ROOT)/operator_directory.proto' || (echo "Run: make proto-build (local infra/ or clone psds-microservice/infra) or use local protoc + plugins" && exit 1)
+		$(PROTO_ROOT)/operator_directory.proto' || (echo "Run: make proto-build (vendor infra) or use local protoc + plugins" && exit 1)
 	@echo "OK: $(GEN_DIR)"
 
 proto-openapi:

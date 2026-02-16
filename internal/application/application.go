@@ -55,8 +55,12 @@ func (a *API) Run(ctx context.Context) error {
 		host = "localhost"
 	}
 	base := "http://" + host + ":" + a.cfg.HTTPPort
-	log.Printf("operator-directory-service HTTP listening on %s", a.srv.Addr)
-	log.Printf("  Health: %s/health  Ready: %s/ready  Swagger: %s/swagger/index.html  API: %s/api/v1/operators", base, base, base, base)
+	log.Printf("HTTP server listening on %s", a.srv.Addr)
+	log.Printf("  Swagger UI:    %s/swagger", base)
+	log.Printf("  Swagger spec:  %s/swagger/openapi.json", base)
+	log.Printf("  Health:        %s/health", base)
+	log.Printf("  Ready:         %s/ready", base)
+	log.Printf("  API v1:        %s/api/v1/", base)
 	go func() {
 		if err := a.srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Printf("http: %v", err)

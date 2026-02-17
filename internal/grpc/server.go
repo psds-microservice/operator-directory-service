@@ -16,9 +16,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// Deps — зависимости gRPC-сервера
+// Deps — зависимости gRPC-сервера (D: зависимость от абстракций).
 type Deps struct {
-	Directory *service.DirectoryService
+	Directory service.DirectoryServicer
 }
 
 // Server implements operator_directory_service.OperatorDirectoryServiceServer

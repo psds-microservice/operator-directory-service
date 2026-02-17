@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+// OperatorPoolLister — интерфейс для получения списка операторов из пула (для подмены моком в тестах).
+type OperatorPoolLister interface {
+	ListOperators(ctx context.Context) ([]PoolOperator, error)
+}
+
 type PoolOperator struct {
 	UserID         string    `json:"user_id"`
 	Available      bool      `json:"available"`

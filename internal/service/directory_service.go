@@ -13,12 +13,21 @@ import (
 	"gorm.io/gorm"
 )
 
-type DirectoryService struct {
-	db   *gorm.DB
-	pool *client.PoolClient
+// DirectoryServicer — интерфейс для gRPC Deps (Dependency Inversion).
+type DirectoryServicer interface {
+	List(ctx context.Context, region, role, status string, limit, offset int) (*ListResult, error)
+	GetByID(ctx context.Context, userID uuid.UUID) (*OperatorEntry, error)
+	GetProfile(ctx context.Context, userID uuid.UUID) (*model.OperatorProfile, error)
+	Create(ctx context.Context, p *model.OperatorProfile) error
+	Update(ctx context.Context, p *model.OperatorProfile) error
 }
 
-func NewDirectoryService(db *gorm.DB, pool *client.PoolClient) *DirectoryService {
+type DirectoryService struct {
+	db   *gorm.DB
+	pool client.OperatorPoolLister
+}
+
+func NewDirectoryService(db *gorm.DB, pool client.OperatorPoolLister) *DirectoryService {
 	return &DirectoryService{db: db, pool: pool}
 }
 

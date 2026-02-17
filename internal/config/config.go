@@ -12,6 +12,7 @@ import (
 type Config struct {
 	AppHost  string
 	HTTPPort string
+	GRPCPort string
 	LogLevel string
 
 	DB struct {
@@ -33,6 +34,7 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		AppHost:            getEnv("APP_HOST", "0.0.0.0"),
 		HTTPPort:           firstEnv("APP_PORT", "HTTP_PORT", "8095"),
+		GRPCPort:           firstEnv("GRPC_PORT", "METRICS_PORT", "9095"),
 		LogLevel:           getEnv("LOG_LEVEL", "info"),
 		OperatorPoolURL:    getEnv("OPERATOR_POOL_URL", "http://localhost:8094"),
 		PoolTimeout:        time.Duration(getEnvInt("POOL_TIMEOUT_SEC", 10)) * time.Second,

@@ -19,7 +19,6 @@ import (
 	grpcserver "github.com/psds-microservice/operator-directory-service/internal/grpc"
 	"github.com/psds-microservice/operator-directory-service/internal/handler"
 	"github.com/psds-microservice/operator-directory-service/internal/kafka"
-	"github.com/psds-microservice/operator-directory-service/internal/searchindex"
 	"github.com/psds-microservice/operator-directory-service/internal/service"
 	"github.com/psds-microservice/operator-directory-service/pkg/gen/operator_directory_service"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -82,7 +81,6 @@ func NewAPI(cfg *config.Config) (*API, error) {
 		RetryBackoff: time.Duration(cfg.PoolRetryBackoffMs) * time.Millisecond,
 	})
 	directorySvc := service.NewDirectoryService(conn, poolClient)
-	searchClient := searchindex.NewClient(cfg.SearchServiceURL)
 	kafkaProducer := kafka.NewProducer(cfg.KafkaBrokers, cfg.KafkaTopicOperator)
 
 	grpcAddr := cfg.AppHost + ":" + cfg.GRPCPort
@@ -93,7 +91,7 @@ func NewAPI(cfg *config.Config) (*API, error) {
 	grpcSrv := grpc.NewServer()
 	grpcImpl := grpcserver.NewServer(grpcserver.Deps{
 		Directory: directorySvc,
-		Indexer:   searchClient,
+		Indexer:   nil, // Индексация теперь через Kafka consumer в search-service worker
 		Producer:  kafkaProducer,
 	})
 	operator_directory_service.RegisterOperatorDirectoryServiceServer(grpcSrv, grpcImpl)

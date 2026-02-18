@@ -150,9 +150,7 @@ func (s *Server) CreateOperator(ctx context.Context, req *operator_directory_ser
 	if err := s.Directory.Create(ctx, profile); err != nil {
 		return nil, s.mapError(err)
 	}
-	if s.Indexer != nil {
-		s.Indexer.IndexOperatorAsync(profile)
-	}
+	// Индексация теперь через Kafka consumer в search-service worker
 	if s.Producer != nil {
 		go s.Producer.ProduceOperatorEvent(context.Background(), "operator.created", profile.UserID, map[string]interface{}{
 			"display_name": profile.DisplayName, "region": profile.Region, "role": profile.Role,
@@ -188,9 +186,7 @@ func (s *Server) UpdateOperator(ctx context.Context, req *operator_directory_ser
 	if err := s.Directory.Update(ctx, profile); err != nil {
 		return nil, s.mapError(err)
 	}
-	if s.Indexer != nil {
-		s.Indexer.IndexOperatorAsync(profile)
-	}
+	// Индексация теперь через Kafka consumer в search-service worker
 	if s.Producer != nil {
 		go s.Producer.ProduceOperatorEvent(context.Background(), "operator.updated", profile.UserID, map[string]interface{}{
 			"display_name": profile.DisplayName, "region": profile.Region, "role": profile.Role,

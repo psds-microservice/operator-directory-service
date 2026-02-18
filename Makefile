@@ -1,4 +1,4 @@
-.PHONY: help build run run-dev migrate clean tidy vet fmt health-check proto proto-build proto-generate proto-generate-local proto-generate-docker proto-openapi install-deps update docker-build docker-compose-up docker-compose-down
+.PHONY: help build run run-dev migrate reindex-search clean tidy vet fmt health-check proto proto-build proto-generate proto-generate-local proto-generate-docker proto-openapi install-deps update docker-build docker-compose-up docker-compose-down
 
 APP_NAME = operator-directory-service
 CMD_PATH = ./cmd/operator-directory-service
@@ -13,7 +13,7 @@ OPENAPI_OUT = api
 
 help:
 	@echo "operator-directory-service"
-	@echo "  make build run run-dev migrate clean tidy vet fmt health-check docker-build docker-compose-up"
+	@echo "  make build run run-dev migrate reindex-search clean tidy vet fmt health-check docker-build docker-compose-up"
 	@echo "  make proto              - Build protoc image (if infra) and generate Go from .proto"
 	@echo "  make proto-generate     - Generate Go + gRPC + grpc-gateway from pkg/operator_directory_service/*.proto"
 	@echo "  make proto-openapi      - Generate OpenAPI (api/openapi.json) from .proto"
@@ -34,6 +34,9 @@ run-dev:
 
 migrate: build
 	@cd $(BIN_DIR) && ./$(APP_NAME) migrate up
+
+reindex-search: build
+	@cd $(BIN_DIR) && ./$(APP_NAME) reindex-search
 
 health-check:
 	@curl -sf http://localhost:$(PORT)/health && echo " OK" || echo " FAIL"

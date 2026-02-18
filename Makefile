@@ -35,7 +35,7 @@ run-dev:
 migrate: build
 	@cd $(BIN_DIR) && ./$(APP_NAME) migrate up
 
-reindex-search: build
+search: build
 	@cd $(BIN_DIR) && ./$(APP_NAME) reindex-search
 
 health-check:

@@ -7,7 +7,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/psds-microservice/operator-directory-service/internal/errs"
+	"github.com/psds-microservice/operator-directory-service/internal/kafka"
 	"github.com/psds-microservice/operator-directory-service/internal/model"
+	"github.com/psds-microservice/operator-directory-service/internal/searchindex"
 	"github.com/psds-microservice/operator-directory-service/internal/service"
 	"github.com/psds-microservice/operator-directory-service/internal/validator"
 	"github.com/psds-microservice/operator-directory-service/pkg/gen/operator_directory_service"
@@ -19,6 +21,8 @@ import (
 // Deps — зависимости gRPC-сервера (D: зависимость от абстракций).
 type Deps struct {
 	Directory service.DirectoryServicer
+	Indexer   searchindex.OperatorIndexer // опционально: индексация операторов в search-service
+	Producer  kafka.OperatorEventProducer // опционально: события операторов в Kafka
 }
 
 // Server implements operator_directory_service.OperatorDirectoryServiceServer
@@ -146,7 +150,14 @@ func (s *Server) CreateOperator(ctx context.Context, req *operator_directory_ser
 	if err := s.Directory.Create(ctx, profile); err != nil {
 		return nil, s.mapError(err)
 	}
-
+	if s.Indexer != nil {
+		s.Indexer.IndexOperatorAsync(profile)
+	}
+	if s.Producer != nil {
+		go s.Producer.ProduceOperatorEvent(context.Background(), "operator.created", profile.UserID, map[string]interface{}{
+			"display_name": profile.DisplayName, "region": profile.Region, "role": profile.Role,
+		})
+	}
 	return toProtoOperatorProfile(profile), nil
 }
 
@@ -177,6 +188,13 @@ func (s *Server) UpdateOperator(ctx context.Context, req *operator_directory_ser
 	if err := s.Directory.Update(ctx, profile); err != nil {
 		return nil, s.mapError(err)
 	}
-
+	if s.Indexer != nil {
+		s.Indexer.IndexOperatorAsync(profile)
+	}
+	if s.Producer != nil {
+		go s.Producer.ProduceOperatorEvent(context.Background(), "operator.updated", profile.UserID, map[string]interface{}{
+			"display_name": profile.DisplayName, "region": profile.Region, "role": profile.Role,
+		})
+	}
 	return toProtoOperatorProfile(profile), nil
 }

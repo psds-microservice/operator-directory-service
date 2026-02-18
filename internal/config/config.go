@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -25,6 +26,9 @@ type Config struct {
 	}
 
 	OperatorPoolURL    string        // e.g. http://localhost:8094
+	SearchServiceURL   string        // опционально: URL search-service для индексации операторов (e.g. http://localhost:8096)
+	KafkaBrokers       []string      // опционально: брокеры Kafka для событий операторов
+	KafkaTopicOperator string        // топик для событий операторов (по умолчанию psds.operator.assigned)
 	PoolTimeout        time.Duration // таймаут запроса к operator-pool
 	PoolMaxRetries     int           // число повторов
 	PoolRetryBackoffMs int           // пауза между повторами (мс)
@@ -37,9 +41,18 @@ func Load() (*Config, error) {
 		GRPCPort:           firstEnv("GRPC_PORT", "METRICS_PORT", "9095"),
 		LogLevel:           getEnv("LOG_LEVEL", "info"),
 		OperatorPoolURL:    getEnv("OPERATOR_POOL_URL", "http://localhost:8094"),
+		SearchServiceURL:   getEnv("SEARCH_SERVICE_URL", ""),
+		KafkaTopicOperator: getEnv("KAFKA_TOPIC_OPERATOR", "psds.operator.assigned"),
 		PoolTimeout:        time.Duration(getEnvInt("POOL_TIMEOUT_SEC", 10)) * time.Second,
 		PoolMaxRetries:     getEnvInt("POOL_MAX_RETRIES", 3),
 		PoolRetryBackoffMs: getEnvInt("POOL_RETRY_BACKOFF_MS", 500),
+	}
+	if brokers := getEnv("KAFKA_BROKERS", ""); brokers != "" {
+		for _, s := range strings.Split(brokers, ",") {
+			if t := strings.TrimSpace(s); t != "" {
+				cfg.KafkaBrokers = append(cfg.KafkaBrokers, t)
+			}
+		}
 	}
 	cfg.DB.Host = getEnv("DB_HOST", "localhost")
 	cfg.DB.Port = getEnv("DB_PORT", "5432")

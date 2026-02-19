@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/psds-microservice/operator-directory-service/internal/errs"
@@ -151,8 +152,11 @@ func (s *Server) CreateOperator(ctx context.Context, req *operator_directory_ser
 		return nil, s.mapError(err)
 	}
 	// Индексация теперь через Kafka consumer в search-service worker
+	// Fire-and-forget: событие должно уйти даже при отмене запроса, но с таймаутом
 	if s.Producer != nil {
-		go s.Producer.ProduceOperatorEvent(context.Background(), "operator.created", profile.UserID, map[string]interface{}{
+		eventCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		go s.Producer.ProduceOperatorEvent(eventCtx, "operator.created", profile.UserID, map[string]interface{}{
 			"display_name": profile.DisplayName, "region": profile.Region, "role": profile.Role,
 		})
 	}
@@ -187,8 +191,11 @@ func (s *Server) UpdateOperator(ctx context.Context, req *operator_directory_ser
 		return nil, s.mapError(err)
 	}
 	// Индексация теперь через Kafka consumer в search-service worker
+	// Fire-and-forget: событие должно уйти даже при отмене запроса, но с таймаутом
 	if s.Producer != nil {
-		go s.Producer.ProduceOperatorEvent(context.Background(), "operator.updated", profile.UserID, map[string]interface{}{
+		eventCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		go s.Producer.ProduceOperatorEvent(eventCtx, "operator.updated", profile.UserID, map[string]interface{}{
 			"display_name": profile.DisplayName, "region": profile.Region, "role": profile.Role,
 		})
 	}

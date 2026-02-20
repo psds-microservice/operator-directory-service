@@ -3,7 +3,7 @@
 APP_NAME = operator-directory-service
 CMD_PATH = ./cmd/operator-directory-service
 BIN_DIR = bin
-PORT = 8095
+PORT = 8098
 PROTOC_IMAGE = local/protoc-go:latest
 PROTO_ROOT = pkg/operator_directory_service
 GEN_DIR = pkg/gen/operator_directory_service

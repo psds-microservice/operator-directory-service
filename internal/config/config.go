@@ -26,7 +26,7 @@ type Config struct {
 	}
 
 	OperatorPoolURL    string        // e.g. http://localhost:8094
-	SearchServiceURL   string        // опционально: URL search-service для индексации операторов (e.g. http://localhost:8096)
+	SearchServiceURL   string        // опционально: URL search-service для индексации операторов (e.g. http://localhost:8099)
 	KafkaBrokers       []string      // опционально: брокеры Kafka для событий операторов
 	KafkaTopicOperator string        // топик для событий операторов (по умолчанию psds.operator.assigned)
 	PoolTimeout        time.Duration // таймаут запроса к operator-pool
@@ -37,8 +37,8 @@ type Config struct {
 func Load() (*Config, error) {
 	cfg := &Config{
 		AppHost:            getEnv("APP_HOST", "0.0.0.0"),
-		HTTPPort:           firstEnv("APP_PORT", "HTTP_PORT", "8095"),
-		GRPCPort:           firstEnv("GRPC_PORT", "METRICS_PORT", "9095"),
+		HTTPPort:           firstEnv("APP_PORT", "HTTP_PORT", "8098"),
+		GRPCPort:           firstEnv("GRPC_PORT", "METRICS_PORT", "9098"),
 		LogLevel:           getEnv("LOG_LEVEL", "info"),
 		OperatorPoolURL:    getEnv("OPERATOR_POOL_URL", "http://localhost:8094"),
 		SearchServiceURL:   getEnv("SEARCH_SERVICE_URL", ""),

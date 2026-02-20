@@ -12,4 +12,4 @@
 ## Запуск
 
 - `make run-dev` — режим разработки.
-- Порт по умолчанию: 8095. Health: `/health`, Swagger UI: `/swagger`.
+- Порт по умолчанию: 8098. Health: `/health`, Swagger UI: `/swagger`.

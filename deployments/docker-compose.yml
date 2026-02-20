@@ -4,10 +4,10 @@ services:
       context: ../..
       dockerfile: operator-directory-service/deployments/Dockerfile
     ports:
-      - "8095:8095"
+      - "8098:8098"
     environment:
       - APP_HOST=0.0.0.0
-      - APP_PORT=8095
+      - APP_PORT=8098
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres

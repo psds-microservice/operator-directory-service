@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/psds-microservice/helpy/limit"
 	"github.com/psds-microservice/operator-directory-service/internal/errs"
 	"github.com/psds-microservice/operator-directory-service/internal/kafka"
 	"github.com/psds-microservice/operator-directory-service/internal/model"
@@ -86,13 +87,7 @@ func toProtoOperatorProfile(profile *model.OperatorProfile) *operator_directory_
 }
 
 func (s *Server) ListOperators(ctx context.Context, req *operator_directory_service.ListOperatorsRequest) (*operator_directory_service.ListOperatorsResponse, error) {
-	limit := int(req.GetLimit())
-	if limit <= 0 {
-		limit = 20
-	}
-	if limit > 100 {
-		limit = 100
-	}
+	limit := limit.ClampLimit(int(req.GetLimit()), 20, 100)
 	offset := int(req.GetOffset())
 	if offset < 0 {
 		offset = 0
